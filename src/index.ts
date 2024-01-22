@@ -9,14 +9,20 @@ const rc = new RingCentral({
 });
 
 const main = async () => {
-  await rc.authorize({
-    jwt: process.env.RINGCENTRAL_JWT_TOKEN!,
-  });
+  // await rc.authorize({
+  //   jwt: process.env.RINGCENTRAL_JWT_TOKEN!,
+  // });
+  rc.token = {
+    access_token: process.env.RINGCENTRAL_ACCESS_TOKEN!,
+  };
   const wsExt = new WebSocketExtension();
   await rc.installExtension(wsExt);
-  wsExt.subscribe(['/restapi/v1.0/account/~/extension/62282928016/presence?detailedTelephonyState=true'], (event) => {
-    console.log(JSON.stringify(event, null, 2));
-  });
+  wsExt.subscribe(
+    [`/restapi/v1.0/account/~/extension/${process.env.CALL_QUEUE_EXTENSION_ID}/presence?detailedTelephonyState=true`],
+    (event) => {
+      console.log(JSON.stringify(event, null, 2));
+    },
+  );
   await waitFor({ interval: 100000000 });
   await rc.revoke();
 };
