@@ -1,5 +1,6 @@
 import RingCentral from '@rc-ex/core';
 import WebSocketExtension from '@rc-ex/ws';
+import waitFor from 'wait-for-async';
 
 const rc = new RingCentral({
   clientId: process.env.RINGCENTRAL_CLIENT_ID!,
@@ -13,7 +14,10 @@ const main = async () => {
   });
   const wsExt = new WebSocketExtension();
   await rc.installExtension(wsExt);
-  console.log(rc.token?.access_token);
+  wsExt.subscribe(['/restapi/v1.0/account/~/extension/62282928016/presence?detailedTelephonyState=true'], (event) => {
+    console.log(JSON.stringify(event, null, 2));
+  });
+  await waitFor({ interval: 100000000 });
   await rc.revoke();
 };
 main();
