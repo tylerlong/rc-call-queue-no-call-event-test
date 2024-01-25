@@ -17,12 +17,13 @@ const main = async () => {
   };
   const wsExt = new WebSocketExtension();
   await rc.installExtension(wsExt);
-  wsExt.subscribe(
+  const subInfo = await wsExt.subscribe(
     [`/restapi/v1.0/account/~/extension/${process.env.CALL_QUEUE_EXTENSION_ID}/presence?detailedTelephonyState=true`],
     (event) => {
       console.log(JSON.stringify(event, null, 2));
     },
   );
+  console.log(JSON.stringify(subInfo.subscriptionInfo, null, 2));
   await waitFor({ interval: 100000000 });
   await rc.revoke();
 };
